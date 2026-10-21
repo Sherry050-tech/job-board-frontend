@@ -1,26 +1,16 @@
-# Tech Job Board (Frontend)
+# React + Vite
 
-A modern, responsive frontend application for browsing and discovering tech jobs. This project serves as a clean, intuitive user interface for a job portal, featuring dynamic routing, job filtering, and detailed job descriptions.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-# Features
+Currently, two official plugins are available:
 
-* **Job Browsing:** View a grid of available tech jobs with quick-glance information (title, company, salary, location).
-* **Live Search & Filtering:** Instantly filter the job list by job title or company name using a responsive search bar.
-* **Dynamic Routing:** Seamless navigation between the Home page, Job Details, User Dashboard, and Authentication pages without browser reloads.
-* **Responsive Design:** A mobile-first layout that scales perfectly from desktop monitors to smartphone screens.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-##  Tech Stack
+## React Compiler
 
-* **Core:** React 18, Vite
-* **Routing:** React Router DOM
-* **Styling:** Tailwind CSS
-* **State Management:** React Local State (`useState`)
-* **Data:** Mock JSON structure for UI population
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-##  Running the Project Locally
+## Expanding the ESLint configuration
 
-If you want to clone and run this project on your local machine, follow these steps:
-
-1. **Clone the repository:**
-```bash
-   git clone https://github.com/Sherry050-tech/tech-job-board.git
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
