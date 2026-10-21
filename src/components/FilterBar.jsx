@@ -1,4 +1,4 @@
-const TYPES = ["All", "Full-time", "Part-time", "Contract", "Internship"];
+const TYPES = ["All", "Full-time", "Part-time", "Remote"];
 
 export default function FilterBar({ activeFilter, setActiveFilter }) {
   return (

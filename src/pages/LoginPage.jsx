@@ -1,114 +1,129 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api";
+import { IconCheck, IconUser, IconBriefcase } from "../components/Icons";
 
 export default function LoginPage({ setUser }) {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "", remember: false });
-  const [errors, setErrors] = useState({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
 
-  const validate = () => {
-    const errs = {};
-    if (!form.email.trim()) errs.email = "Email is required.";
-    else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = "Enter a valid email.";
-    if (!form.password) errs.password = "Password is required.";
-    return errs;
+  const handleLogin = async (loginEmail, loginPassword) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.login(loginEmail || email, loginPassword || password);
+      if (res.success && res.data) {
+        setUser(res.data);
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError(err.message || "Invalid authentication credentials.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    setErrors({});
-    setLoading(true);
-
-    // Simulate async sign-in
-    setTimeout(() => {
-      const name = form.email.split("@")[0];
-      setUser({ name, email: form.email });
-      setLoading(false);
-      setSuccess(true);
-      setTimeout(() => navigate("/dashboard"), 700);
-    }, 1000);
+  const handleQuickDemo = (role) => {
+    if (role === "employer") {
+      setEmail("recruiting@vercel.com");
+      setPassword("password123");
+      handleLogin("recruiting@vercel.com", "password123");
+    } else {
+      setEmail("alex.rivera@example.com");
+      setPassword("password123");
+      handleLogin("alex.rivera@example.com", "password123");
+    }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="auth-icon">🔐</div>
-          <h1 className="auth-title">Welcome back</h1>
-          <p className="auth-subtitle">Sign in to your TechJobs account</p>
+    <div style={{ maxWidth: 440, margin: "4.5rem auto", padding: "0 1.5rem" }}>
+      <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-medium)", borderRadius: "var(--radius-xl)", padding: "2.25rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            INDEX // AUTHENTICATION
+          </span>
+          <h1 style={{ fontSize: "1.45rem", fontWeight: 700, color: "#ffffff", marginTop: "0.35rem" }}>
+            Sign in to Workspace
+          </h1>
+          <p style={{ fontSize: "0.825rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+            Access application tracker, saved bookmarks, or employer studio
+          </p>
         </div>
 
-        {success && (
-          <div className="alert-success">✅ Signed in successfully! Redirecting…</div>
+        {/* Demo Fast Login Buttons */}
+        <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", padding: "1rem", marginBottom: "1.5rem" }}>
+          <span style={{ fontSize: "0.72rem", fontFamily: "var(--font-mono)", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "0.5rem" }}>
+            Instant Demo Sign-in
+          </span>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+            <button
+              type="button"
+              onClick={() => handleQuickDemo("seeker")}
+              className="btn-secondary"
+              style={{ fontSize: "0.775rem", padding: "0.45rem 0.6rem" }}
+            >
+              <IconUser size={13} /> As Candidate
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemo("employer")}
+              className="btn-secondary"
+              style={{ fontSize: "0.775rem", padding: "0.45rem 0.6rem" }}
+            >
+              <IconBriefcase size={13} /> As Employer
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div style={{ background: "rgba(244, 63, 94, 0.08)", border: "1px solid rgba(244, 63, 94, 0.2)", color: "#fb7185", padding: "0.65rem 0.85rem", borderRadius: "var(--radius-sm)", fontSize: "0.825rem", marginBottom: "1.25rem" }}>
+            {error}
+          </div>
         )}
 
-        <form id="login-form" onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="login-email" className="form-label">Email address</label>
+        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+          <div className="form-group-field">
+            <label className="form-field-label">Email Address</label>
             <input
-              id="login-email"
               type="email"
-              className={`form-input ${errors.email ? "error" : ""}`}
-              placeholder="you@example.com"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              autoComplete="email"
+              className="minimal-input"
+              placeholder="name@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
-            {errors.email && <p className="form-error">{errors.email}</p>}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="login-password" className="form-label">Password</label>
+          <div className="form-group-field">
+            <label className="form-field-label">Password</label>
             <input
-              id="login-password"
               type="password"
-              className={`form-input ${errors.password ? "error" : ""}`}
+              className="minimal-input"
               placeholder="••••••••"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
-            {errors.password && <p className="form-error">{errors.password}</p>}
-          </div>
-
-          <div className="form-row">
-            <label className="checkbox-label">
-              <input
-                id="login-remember"
-                type="checkbox"
-                checked={form.remember}
-                onChange={(e) => setForm({ ...form, remember: e.target.checked })}
-              />
-              Remember me
-            </label>
-            <span style={{ fontSize: "0.8125rem", color: "var(--color-primary)", cursor: "pointer" }}>
-              Forgot password?
-            </span>
           </div>
 
           <button
-            id="login-submit"
             type="submit"
-            className="btn-primary btn-full"
+            className="btn-primary"
             disabled={loading}
+            style={{ width: "100%", marginTop: "0.75rem", padding: "0.6rem" }}
           >
-            {loading ? (
-              <>
-                <span className="spinner" /> Signing in…
-              </>
-            ) : (
-              "Sign in →"
-            )}
+            {loading ? "Verifying..." : "Sign in to Account"}
           </button>
         </form>
 
-        <div className="auth-footer">
+        <div style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.825rem", color: "var(--text-muted)" }}>
           Don't have an account?{" "}
-          <Link to="/register">Create one →</Link>
+          <Link to="/register" style={{ color: "var(--text-primary)", fontWeight: 600, textDecoration: "none" }}>
+            Create one →
+          </Link>
         </div>
       </div>
     </div>
